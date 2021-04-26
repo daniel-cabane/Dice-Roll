@@ -78,10 +78,10 @@
       nbOfDice: null,
       biasList: [
         {text: 'None', value: 0},
-        {text: 'Subtle (+2% or -2%)', value: 0.02},
-        {text: 'Visible (+5% or -5%)', value: 0.05},
-        {text: 'Obvious (+10% or -10%)', value: 0.1},
-        {text: 'Blatant (+20% or -20%)', value: 0.2}
+        {text: 'Subtle (+1% or -1%)', value: 0.01},
+        {text: 'Visible (+2% or -2%)', value: 0.02},
+        {text: 'Obvious (+5% or -5%)', value: 0.05},
+        {text: 'Blatant (+10% or -10%)', value: 0.1}
       ],
       bias: null,
       started: false,
