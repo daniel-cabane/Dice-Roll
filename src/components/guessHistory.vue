@@ -8,7 +8,7 @@
         </v-btn>
       </template>
       <v-card>
-        <v-card-title class='text-h3'>
+        <v-card-title class='text-h5'>
             Guess history
         </v-card-title>
         <v-card-text>
