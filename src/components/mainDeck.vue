@@ -5,13 +5,16 @@
       <rulesDialog/>
     </div>
     <v-row class="text-center mt-3">
-      <v-col cols="4" style='display:flex;justify-content:center;align-items:center'>
+      <v-col cols="3" style='display:flex;justify-content:center;align-items:center'>
         <v-select :disabled='started' hide-details :items="[1,2,3,4]" v-model='nbOfDice' label="Nb of dice" outlined></v-select>
       </v-col>
-      <v-col cols="4" style='display:flex;justify-content:center;align-items:center'>
+      <v-col cols="3" style='display:flex;justify-content:center;align-items:center'>
         <v-select :disabled='started' hide-details :items="biasList" v-model='bias' label="Maximum Bias" outlined></v-select>
       </v-col>
-      <v-col cols="4" style='display:flex;justify-content:center;align-items:center'>
+      <v-col cols="3" style='display:flex;justify-content:center;align-items:center'>
+        <v-select hide-details :items="trackList" v-model='tracking' label="Keep track of" outlined></v-select>
+      </v-col>
+      <v-col cols="3" style='display:flex;justify-content:center;align-items:center'>
         <v-btn x-large color='error' style='width:80%' v-if='started' outlined @click='init'>Restart</v-btn>
         <v-btn :disabled='nbOfDice == null || bias == null' x-large color='primary' style='width:80%' v-else @click='setUp'>Set up</v-btn>
       </v-col>
@@ -22,8 +25,13 @@
         <div class='d-flex justify-space-around mb-10'>
           <div class='ma-1' v-for='(die, index) in dice' :key='index'>
             <singleDice :result='die.result' :rolling='rolling'/>
-            <div class='grey--text'>Nb of success : {{ die.success }}</div>
-            <div class='text-h6'>Success ratio :<br/><span class='text-h4'><b>{{ die.ratio }}%</b></span></div>
+            <div v-if='tracking == "avg"'>
+                <div class='text-h6'>Average :<br/><span class='text-h4'><b>{{ die.avg.toFixed(2) }}</b></span></div>
+            </div>
+            <div v-else>
+              <div class='grey--text'>Nb of success : {{ die.success }}</div>
+              <div class='text-h6'>Success ratio :<br/><span class='text-h4'><b>{{ die.ratio }}%</b></span></div>
+            </div>
             <div style='position:relative' v-if='bias!=0'>
               <v-select 
                 hide-details solo dense
@@ -84,6 +92,11 @@
         {text: 'Blatant (+10% or -10%)', value: 0.1}
       ],
       bias: null,
+      trackList: [
+        {text: 'Number of 6s', value: 'six'},
+        {text: 'Average', value: 'avg'}
+      ],
+      tracking: null,
       started: false,
       rolling: false,
       tries: 0,
@@ -103,7 +116,7 @@
       setUp() {
         this.dice = [];
         for(let i=0; i < this.nbOfDice ; i++){
-          this.dice.push({result: 1, bias: Math.random()<0.5 ? Math.sign(Math.random()-0.5)*this.bias : 0, success: 0, ratio: 0});
+          this.dice.push({result: 1, bias: Math.random()<0.5 ? Math.sign(Math.random()-0.5)*this.bias : 0, success: 0, ratio: 0, avg: 0});
         }
         this.started = true;
       },
@@ -111,6 +124,7 @@
         this.nbOfDice = 1;
         this.dice = [];
         this.bias = 0;
+        this.tracking = null;
         this.tries = 0;
         this.started = false;
         clearInterval(this.roll);
@@ -127,6 +141,7 @@
             die.success = die.success + 1;
           }
           die.ratio = (100*die.success/this.tries).toFixed(1);
+          die.avg = (die.avg*(this.tries-1)+result)/this.tries;
         });
       },
       rollDice() {
